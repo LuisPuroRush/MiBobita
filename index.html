@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animación de Botón</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffc0cb; /* rosadito claro */
+    font-family: 'Poppins', sans-serif; /* Cambiar la fuente del texto */
+    overflow: hidden; /* Evitar que los corazones salgan de la página */
+    position: relative; /* Establecer un contexto de posición para los corazones */
+  }
+
+  .container {
+    text-align: center;
+    position: relative; /* Necesario para el posicionamiento de las flechas */
+  }
+
+  button {
+    background-color: #ffc0cb; /* rosadito claro */
+    border: 2px solid white; /* Agregar bordes blancos al botón */
+    color: white;
+    padding: 15px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Agregar transición suave */
+    font-family: 'Poppins', sans-serif; /* Cambiar la fuente del botón */
+  }
+
+  button:hover {
+    background-color: #ff8cb4; /* Cambiar color de fondo al pasar el mouse */
+  }
+
+  #content {
+    margin-top: 20px;
+    display: none; /* Ocultar el contenido inicialmente */
+  }
+
+  #content img {
+    /* Quitar los bordes de las imágenes */
+    border: none;
+    max-width: 80%; /* Reducir el tamaño de la imagen */
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Centrar la imagen */
+  }
+
+  #content p {
+    font-size: 24px; /* Aumentar el tamaño del texto */
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .nav-arrows {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    z-index: 100;
+    width: 40px; /* Ajustar el tamaño del círculo */
+    height: 40px; /* Ajustar el tamaño del círculo */
+    line-height: 40px; /* Centrar el contenido verticalmente */
+    text-align: center; /* Centrar el contenido horizontalmente */
+    border-radius: 50%; /* Hacer un círculo */
+    background-color: rgba(255, 255, 255, 0.5); /* Fondo del círculo con opacidad */
+    transition: background-color 0.3s ease; /* Agregar transición suave */
+    display: none; /* Ocultar las flechas inicialmente */
+  }
+
+  .nav-arrows:hover {
+    background-color: rgba(255, 255, 255, 0.8); /* Cambiar opacidad al pasar el mouse */
+  }
+
+  .nav-left {
+    left: 10px; /* Ajustar la posición de la flecha izquierda */
+  }
+
+  .nav-right {
+    right: 10px; /* Ajustar la posición de la flecha derecha */
+  }
+
+  /* Estilos para los corazones */
+  .heart {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FF6B81"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+    background-size: contain;
+    animation: heartAnimation 1s infinite ease-in-out alternate;
+  }
+
+  @keyframes heartAnimation {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-200px);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <button id="animBtn">Presiona Aquí</button>
+  <div id="content"></div>
+</div>
+
+<!-- Agrega aquí el elemento de audio -->
+<audio id="myAudio" src="music.mp3" preload="auto"></audio>
+
+<script>
+const button = document.getElementById('animBtn');
+const content = document.getElementById('content');
+const navLeft = document.createElement('span');
+const navRight = document.createElement('span');
+let index = 0;
+const texts = ["MI BOBITA HERMOSA ❤️", "TE QUIERO MUCHO MI BOBITA ❤️", "EN VERDAD ERES MUY, LINDA JAJA TE EXTRAÑE MUCHO", "BUENO BOBI YA ES HORA DE...", "HORA DE MIMIR, TE QUIERO MUCHO. ME MANDA AUDIO? :C ❤️"];
+const images = ["https://i.pinimg.com/originals/05/c7/34/05c73463339dd610fffb6dd774503b5a.gif", "https://i.pinimg.com/564x/7f/c4/7b/7fc47bfcbdc3f80d1692844f461f1fd4.jpg", "https://i.pinimg.com/originals/53/ce/a5/53cea512218eb024809f290f13e736de.gif", "https://i.pinimg.com/originals/44/e5/35/44e535f46edeab4b95b4ccd94e3f1ebf.gif", "https://i.pinimg.com/564x/94/f8/77/94f8778fbe846333899b4e17bf644ff1.jpg"];
+
+button.addEventListener('click', () => {
+  button.style.display = 'none'; // Ocultar el botón al ser presionado
+  content.style.display = 'block'; // Mostrar el contenido al ser presionado
+  animateContent(index);
+  navLeft.style.display = 'inline-block'; // Mostrar la flecha izquierda al iniciar la animación
+  navRight.style.display = 'inline-block'; // Mostrar la flecha derecha al iniciar la animación
+  createHearts(); // Crear corazones flotantes
+  playAudio(); // Reproducir la música
+});
+
+function animateContent(index) {
+  content.innerHTML = `<p>${texts[index]}</p><img src="${images[index]}" alt="Imagen">`;
+
+  const interval = setInterval(() => {
+    index++;
+    if (index >= texts.length) {
+      clearInterval(interval);
+      return;
+    }
+    content.innerHTML = `<p>${texts[index]}</p><img src="${images[index]}" alt="Imagen">`;
+  }, 4000);
+}
+
+// Funciones para retroceder y avanzar imágenes
+function prevImage() {
+  index = (index - 1 + images.length) % images.length;
+  animateContent(index);
+}
+
+function nextImage() {
+  index = (index + 1) % images.length;
+  animateContent(index);
+}
+
+// Agregar eventos a las flechas de navegación
+document.addEventListener('DOMContentLoaded', () => {
+  navLeft.innerHTML = '&#10094;'; // Unicode para la flecha izquierda
+  navLeft.classList.add('nav-arrows', 'nav-left');
+  navLeft.addEventListener('click', prevImage);
+  document.querySelector('.container').appendChild(navLeft);
+
+  navRight.innerHTML = '&#10095;'; // Unicode para la flecha derecha
+  navRight.classList.add('nav-arrows', 'nav-right');
+  navRight.addEventListener('click', nextImage);
+  document.querySelector('.container').appendChild(navRight);
+});
+
+// Función para crear corazones flotantes
+function createHearts() {
+  const numHearts = 50; // Número de corazones a crear
+  for (let i = 0; i < numHearts; i++) {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * window.innerWidth + 'px'; // Posición horizontal aleatoria
+    heart.style.top = Math.random() * window.innerHeight + 'px'; // Posición vertical aleatoria
+    document.body.appendChild(heart);
+  }
+}
+
+// Función para reproducir la música
+function playAudio() {
+  const audio = document.getElementById('myAudio');
+  audio.play();
+}
+</script>
+</body>
+</html>
